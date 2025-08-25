@@ -24,6 +24,9 @@ public class GanhouOuPerdeu_Atividade : MonoBehaviour
 
         if (transform.position.x >= ganhou)
         {
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            rb.constraints = RigidbodyConstraints2D.FreezePositionX;
+            rb.constraints = RigidbodyConstraints2D.FreezePositionY;
             Debug.Log("Parabéns! Você ganhou!");
             Debug.Log("Você conseguiu coletar " + ColetarMoedas_Atividade.moedas + " moedas!");
         }
