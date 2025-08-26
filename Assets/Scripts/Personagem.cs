@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class Personagem : MonoBehaviour
 {
-    public float velocidade = 5;
+    public Transform projetil;
+    public float velocidade = 10;
     public float velocidadeMax = 5;
     public float puloForca = 10;
     public Transform groundCheck;
     public float rayCastDistancia = 0.6f;
     bool puloDisponivel = true;
+    bool estaOlhandoDireita = true;
     Rigidbody2D rb;
     void Start()
     {
@@ -18,17 +20,48 @@ public class Personagem : MonoBehaviour
     void Update()
     {
         //lógica do movimento
-        float horizontal = Input.GetAxisRaw("Horizontal") * velocidade * Time.deltaTime;
+        float horizontal = Input.GetAxisRaw("Horizontal");
 
-        Vector2 movimento = new Vector2(horizontal, 0);
-        
-        rb.linearVelocity += movimento;
-        rb.linearVelocityX = Mathf.Clamp(rb.linearVelocityX, -velocidadeMax, velocidadeMax);
+        if (horizontal == 1)
+        {
+            transform.eulerAngles = new Vector2(0, 0);
+            estaOlhandoDireita = true;
+        }
+        if (horizontal == -1)
+        {
+            transform.eulerAngles = new Vector2(0, 180);
+            estaOlhandoDireita = false;
+        }
 
         //if (movimento.x == 0)
         //{
         //    rb.linearVelocityX = 0;
         //}
+
+        //lógica do tiro
+
+        bool tiro = Input.GetKeyDown(KeyCode.R);
+        if (tiro)
+        {
+            Transform instanciado = Instantiate(projetil);
+            instanciado.position = transform.position;
+            instanciado.GetComponent<Projetil>().enabled = true;
+            if (estaOlhandoDireita == true)
+            {
+                instanciado.GetComponent<Projetil>().direcao = new Vector2(1, 0);
+            }
+            else
+            {
+                instanciado.GetComponent<Projetil>().direcao = new Vector2(-1, 0);
+            }
+        }
+
+        horizontal = horizontal * velocidade * Time.deltaTime;
+
+        Vector2 movimento = new Vector2(horizontal, 0);
+
+        rb.linearVelocity += movimento;
+        rb.linearVelocityX = Mathf.Clamp(rb.linearVelocityX, -velocidadeMax, velocidadeMax);
 
         //lógica do pulo
 
