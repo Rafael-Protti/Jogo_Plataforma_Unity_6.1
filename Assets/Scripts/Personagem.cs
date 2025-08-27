@@ -1,10 +1,11 @@
 using JetBrains.Rider.Unity.Editor;
+using TMPro;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class Personagem : MonoBehaviour
 {
-    public Transform projetil;
+    Transform projetil;
     public float velocidade = 10;
     public float velocidadeMax = 5;
     public float puloForca = 10;
@@ -16,9 +17,11 @@ public class Personagem : MonoBehaviour
     void Start()
     {
         rb = transform.GetComponent<Rigidbody2D>(); //transform. é redundante aqui.
+        projetil = GameObject.Find("Kamehameha").transform;
     }
     void Update()
     {
+
         //lógica do movimento
         float horizontal = Input.GetAxisRaw("Horizontal");
 
