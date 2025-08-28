@@ -2,22 +2,29 @@ using JetBrains.Rider.Unity.Editor;
 using TMPro;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using UnityEngine.UIElements.Experimental;
 
 public class Personagem : MonoBehaviour
 {
+    Animator animator;
     Transform projetil;
     public float velocidade = 10;
     public float velocidadeMax = 5;
     public float puloForca = 10;
     public Transform groundCheck;
     public float rayCastDistancia = 0.6f;
+    public bool ativadoProjetil = true;
     bool puloDisponivel = true;
     bool estaOlhandoDireita = true;
     Rigidbody2D rb;
     void Start()
     {
+        animator = transform.GetComponent<Animator>();
         rb = transform.GetComponent<Rigidbody2D>(); //transform. é redundante aqui.
-        projetil = GameObject.Find("Kamehameha").transform;
+        if (ativadoProjetil)
+        {
+            projetil = GameObject.Find("Kamehameha").transform;
+        }
     }
     void Update()
     {
@@ -66,6 +73,27 @@ public class Personagem : MonoBehaviour
         rb.linearVelocity += movimento;
         rb.linearVelocityX = Mathf.Clamp(rb.linearVelocityX, -velocidadeMax, velocidadeMax);
 
+        if (animator.GetBool("estaPulando") == false) //esse IF não é necessário para esse script
+        {
+            if (rb.linearVelocityX >= 3 || rb.linearVelocityX <= -3)
+            {
+                animator.SetBool("estaCorrendo", true);
+            }
+            else
+            {
+                animator.SetBool("estaCorrendo", false);
+            }
+
+            if (rb.linearVelocityX < 0.1f && rb.linearVelocityX > -0.1f)
+            {
+                animator.SetBool("estaAndando", false);
+            }
+            else
+            {
+                animator.SetBool("estaAndando", true);
+            }
+        }
+
         //lógica do pulo
 
         //Forma 3 de fazer o pulo: Raycast
@@ -78,10 +106,12 @@ public class Personagem : MonoBehaviour
         bool pulo = Input.GetButtonDown("Jump");
 
         if (pulo && puloDisponivel)
-        {
+        {   
             rb.AddForce(new Vector2(0, puloForca), ForceMode2D.Impulse);
-            puloDisponivel = false;
+            puloDisponivel = false; 
         }
+
+        animator.SetBool("estaPulando", !puloDisponivel);
 
     }
     /*private void OnCollisionEnter2D(Collision2D collision) //Forma 1 de fazer o pulo: COLISÕES
